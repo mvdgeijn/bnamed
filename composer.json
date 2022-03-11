@@ -1,0 +1,33 @@
+{
+    "name": "mvdgeijn/bnamed",
+    "type": "library",
+    "description": "Library for communicating with the bNamed.net API",
+    "keywords": ["bnamed", "api"],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mvdgeijn\\BNamed\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "bHosted",
+            "email": "marc@bhosted.nl"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.4|^8.0",
+        "guzzlehttp/guzzle": "^7.0.1"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mvdgeijn\\BNamed\\BNamedServiceProvider"
+            ],
+            "aliases": {
+                "BNamed": "Mvdgeijn\\BNamed\\Facades\\BNamed"
+            }
+        }
+    }
+}

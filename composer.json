@@ -19,15 +19,5 @@
     "require": {
         "php": "^7.4|^8.0",
         "guzzlehttp/guzzle": "^7.0.1"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Mvdgeijn\\BNamed\\BNamedServiceProvider"
-            ],
-            "aliases": {
-                "BNamed": "Mvdgeijn\\BNamed\\Facades\\BNamed"
-            }
-        }
     }
 }

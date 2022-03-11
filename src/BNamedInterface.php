@@ -13,16 +13,7 @@ interface BNamedInterface
      *
      * @return BNamed The created bNamed client.
      */
-    public function connect(string $host, int $port = 8081, string $server = 'localhost'): self;
-
-    /**
-     * Set the authorization key to use for each request.
-     *
-     * @param string $key The key to use.
-     *
-     * @return BNamedInterface The current client.
-     */
-    public function useKey(string $key): self;
+    public function connect(string $host): self;
 
     /**
      * Return the configuration

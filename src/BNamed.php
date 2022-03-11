@@ -109,7 +109,7 @@ class BNamed implements BNamedInterface
         ];
     }
 
-    public function getAllTLDs()
+    public function TLDAll()
     {
         return $this->connector->get('TLDall');
     }

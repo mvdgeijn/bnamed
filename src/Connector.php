@@ -7,8 +7,10 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 use GuzzleHttp\Psr7\Utils;
+use Mvdgeijn\BNamed\Exceptions\BNamesException;
+use Mvdgeijn\BNamed\Transformers\Transformer;
 
-class Connector
+class Connector implements ConnectorInterface
 {
     /**
      * @var GuzzleClient The Guzzle client.
@@ -16,76 +18,73 @@ class Connector
     private $httpClient;
 
     /**
-     * @var Powerdns The API client.
+     * @var BNamed The API client.
      */
     private $bnamed;
 
     /**
      * Connector constructor.
      *
-     * @param Powerdns|null     $client             The client instance.
+     * @param BNamed|null     $client             The client instance.
      * @param HandlerStack|null $guzzleHandlerStack Optional Guzzle handlers.
      */
     public function __construct(BNamed $client, ?HandlerStack $guzzleHandlerStack = null)
     {
-        $this->powerdns = $client;
+        $this->bnamed = $client;
 
         // Don't let Guzzle throw exceptions, as it is handled by this class.
-        $this->httpClient = new GuzzleClient(['exceptions' => false, 'handler' => $guzzleHandlerStack]);
+        $this->httpClient = new GuzzleClient([
+                'exceptions' => false,
+                'handler' => $guzzleHandlerStack
+            ]);
     }
 
     /**
      * Perform a GET request and return the parsed body as response.
      *
-     * @param string $urlPath The URL path.
+     * @param string $command
+     * @param array|null $payload (optional)
      *
-     * @return mixed[] The response body.
+     * @return array The response body.
      */
-    public function get($command, $payload): array
+    public function get($command, ?array $params = null): array
     {
-        $payload['command'] = $command;
+        $params['command'] = $command;
 
-        return $this->makeCall('GET', $payload);
+        return $this->makeCall('GET', $command, $params);
     }
 
     /**
      * Perform a POST request and return the parsed body as response.
      *
-     * @param string      $urlPath The URL path.
-     * @param Transformer $payload The payload to post.
+     * @param Transformer $params The payload to post.
      *
      * @return mixed[] The response body.
      */
-    public function post(Transformer $payload): array
+    public function post(Transformer $params): array
     {
-        return $this->makeCall('POST',json_encode($payload->transform()));
+        return $this->makeCall('POST',json_encode($params->transform()));
     }
 
     /**
      * Make the call to the BNamed API.
      *
-     * @param string      $method  The method to use for the call.
-     * @param string      $urlPath The URL path.
-     * @param string|null $payload (Optional) The payload to include.
-     *
-     * @throws PowerdnsException   When an unknown response is returned.
-     * @throws ValidationException When a validation error is returned.
+     * @param string        $method  The method to use for the call.
+     * @param string        $command
+     * @param string|null   $params (Optional) The payload to include.
      *
      * @return mixed[] The decoded JSON response.
      */
-    protected function makeCall(string $method, string $command, ?string $payload = null): array
+    protected function makeCall(string $method, string $command, ?array $params = null): array
     {
-        $payload['command'] = $command;
+        $params['command'] = $command;
 
-        $url = $this->buildUrl();
+        $url = $this->buildUrl( $params );
         $headers = $this->getDefaultHeaders();
 
-        $this->powerdns->log()->debug('Sending ['.$method.'] request', compact('url', 'headers', 'payload'));
+        $request = new Request($method, $url,$headers );
 
-        $stream = $payload !== null ? Utils::streamFor($payload) : null;
-        $request = new Request($method, $url, $headers, $stream);
-
-        $response = $this->httpClient->send($request, ['http_errors' => false]);
+        $response = $this->httpClient->send($request,['http_errors' => false, 'verify' => false]);
 
         return $this->parseResponse($response);
     }
@@ -95,52 +94,35 @@ class Connector
      *
      * @param PsrResponse $response The call response.
      *
-     * @throws ValidationException If there was a validation error returned.
-     * @throws PowerdnsException   If there was a problem with the request.
-     *
      * @return mixed[] The decoded JSON response.
+     * @throws BNamesException
      */
     protected function parseResponse(PsrResponse $response): array
     {
-        $this->powerdns->log()->debug('Request completed', ['statusCode' => $response->getStatusCode()]);
-        $contents = json_decode($response->getBody()->getContents(), true);
+        if( $response->getStatusCode() == 200 ) {
+            $xml = $response->getBody()->getContents();
 
-        switch ($response->getStatusCode()) {
-            case 200:
-            case 201:
-                return $contents ?? [];
-
-                break;
-
-            case 204:
-                return [];
-
-                break;
-
-            case 422:
-                throw new ValidationException($contents['error']);
-
-                break;
+            return $xml;
+        } else {
+            throw new BNamesException("bNamed API error response code " . $response->getStatusCode() );
         }
-
-        $this->powerdns->log()->debug('Request failed.', ['result_body' => $contents]);
-        $error = $contents['error'] ?? 'Unknown bNamed exception.';
-
-        throw new PowerdnsException($error);
     }
 
     /**
      * Get the complete URL for making API requests.
      *
-     * @param string $path The path to append to the "base" URL.
+     * @param ?array $params
      *
      * @return string The complete URL.
      */
-    protected function buildUrl(): string
+    protected function buildUrl(?array $params = null ): string
     {
         $config = $this->bnamed->getConfig();
 
-        return $config['host'];
+        $params['UID'] = $config['username'];
+        $params['Key'] = $config['password'];
+
+        return $config['host'] . "?" . http_build_query($params);
     }
 
     /**
@@ -151,7 +133,6 @@ class Connector
     protected function getDefaultHeaders(): array
     {
         return [
-            'X-API-Key' => $this->powerdns->getConfig()['apiKey'],
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'User-Agent' => 'mvdgeijn-bnamed/'.BNamed::CLIENT_VERSION,

@@ -2,12 +2,13 @@
 
 namespace Mvdgeijn\BNamed;
 
+use Mvdgeijn\BNamed\Factories\Response;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 use GuzzleHttp\Psr7\Utils;
-use Mvdgeijn\BNamed\Exceptions\BNamesException;
+use Mvdgeijn\BNamed\Exceptions\BNamedException;
 use Mvdgeijn\BNamed\Transformers\Transformer;
 
 class Connector implements ConnectorInterface
@@ -86,7 +87,7 @@ class Connector implements ConnectorInterface
 
         $response = $this->httpClient->send($request,['http_errors' => false, 'verify' => false]);
 
-        return $this->parseResponse($response);
+        return $this->getResult($response);
     }
 
     /**
@@ -94,17 +95,23 @@ class Connector implements ConnectorInterface
      *
      * @param PsrResponse $response The call response.
      *
-     * @return mixed[] The decoded JSON response.
-     * @throws BNamesException
+     * @throws BNamedException
      */
-    protected function parseResponse(PsrResponse $response): array
+    protected function getResult(PsrResponse $response)
     {
         if( $response->getStatusCode() == 200 ) {
-            $xml = $response->getBody()->getContents();
+            $xml = simplexml_load_string($response->getBody()->getContents() );
 
-            return $xml;
+            if( (int)$xml->ErrorCode == 0 ) {
+                foreach( $xml->Result->children() as $key => $value ) {
+                    if( method_exists( Response::class, $key) )
+                        return Response::$key( $value );
+                }
+            } else {
+                throw new BNamedException("bNamed XML error response code " . $xml->ErrorCode . ": " . $xml->ErrorText );
+            }
         } else {
-            throw new BNamesException("bNamed API error response code " . $response->getStatusCode() );
+            throw new BNamedException("bNamed API error response code " . $response->getStatusCode() );
         }
     }
 

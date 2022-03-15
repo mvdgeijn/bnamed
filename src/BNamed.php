@@ -2,6 +2,8 @@
 
 namespace Mvdgeijn\BNamed;
 
+use Mvdgeijn\BNamed\Responses\TLDsResponse;
+
 class BNamed implements BNamedInterface
 {
     /**

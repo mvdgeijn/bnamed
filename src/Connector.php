@@ -103,10 +103,7 @@ class Connector implements ConnectorInterface
             $xml = simplexml_load_string($response->getBody()->getContents() );
 
             if( (int)$xml->ErrorCode == 0 ) {
-                foreach( $xml->Result->children() as $key => $value ) {
-                    if( method_exists( Response::class, $key) )
-                        return Response::$key( $value );
-                }
+                return Response::parse( $xml->Result->children() );
             } else {
                 throw new BNamedException("bNamed XML error response code " . $xml->ErrorCode . ": " . $xml->ErrorText );
             }

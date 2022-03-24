@@ -115,4 +115,9 @@ class BNamed implements BNamedInterface
     {
         return $this->connector->get('TLDall');
     }
+
+    public function check($domains)
+    {
+        return $this->connector->get('check', ["DomainList" => implode(",", $domains)]);
+    }
 }

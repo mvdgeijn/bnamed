@@ -85,7 +85,7 @@ class Connector implements ConnectorInterface
 
         $request = new Request($method, $url,$headers );
 
-        $response = $this->httpClient->send($request,['http_errors' => false, 'verify' => false]);
+        $response = $this->httpClient->send($request);
 
         return $this->getResult($response);
     }
@@ -100,7 +100,8 @@ class Connector implements ConnectorInterface
     protected function getResult(PsrResponse $response)
     {
         if( $response->getStatusCode() == 200 ) {
-            $xml = simplexml_load_string($response->getBody()->getContents() );
+            $body = $response->getBody()->getContents();
+            $xml = simplexml_load_string($body );
 
             if( (int)$xml->ErrorCode == 0 ) {
                 return Response::parse( $xml->Result->children() );

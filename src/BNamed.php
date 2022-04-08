@@ -120,4 +120,9 @@ class BNamed implements BNamedInterface
     {
         return $this->connector->get('check', ["DomainList" => implode(",", $domains)]);
     }
+
+    public function getReactivatableDomains()
+    {
+        return $this->connector->get('GetReactivatableDomains');
+    }
 }

@@ -22,6 +22,8 @@ class TLDResponse implements ResponseInterface
 
     public int $minimumLength;
 
+    public array $prices = [];
+
     public static function parse(SimpleXMLElement $element)
     {
         $rsp = new TLDResponse();
@@ -42,6 +44,9 @@ class TLDResponse implements ResponseInterface
         $rsp->transferPeriod = explode(",", (string)$element->Transfer_Period);
 
         $rsp->minimumLength = (int)$element->Minimum_Length;
+
+        foreach( (array)$element->Prices as $key => $value )
+            $rsp->prices[$key] = str_replace(",", ".", $value );
 
         return $rsp;
     }

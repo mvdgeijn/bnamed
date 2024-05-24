@@ -20,6 +20,16 @@ class Response
             if( strcmp( \Str::substr($key, 0, 4 ), "Name" ) == 0 ) {
                 $data[$value->SLD . "." . $value->TLD] = (int)$value->AvailabilityCode;
             }
+
+            if( strcmp( \Str::substr($key, 0, 6 ), "Domain") == 0 ) {
+                list($symbol, $fee) = explode(' ', (string)$value->Fee);
+                $data[$value->SLD . "." . $value->TLD] = [
+                    'domain' => (string)$value->SLD . "." . (string)$value->TLD,
+                    'reactivatableUntil' => \Carbon::createFromFormat( 'd/m/Y H:i:s', (string)$value->ReactivatableUntil . ' 00:00:00'),
+                    'fee' => \Str::replace(',', '.', $fee ),
+                    'currency' => $symbol
+                ];
+            }            
         }
 
         return $data;

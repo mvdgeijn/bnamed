@@ -2,16 +2,15 @@
 
 namespace Mvdgeijn\BNamed;
 
-use Mvdgeijn\BNamed\Factories\Response;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as PsrResponse;
-use GuzzleHttp\Psr7\Utils;
 use Mvdgeijn\BNamed\Exceptions\BNamedException;
+use Mvdgeijn\BNamed\Responses\Response;
 use Mvdgeijn\BNamed\Transformers\Transformer;
 
-class Connector implements ConnectorInterface
+class Connector
 {
     /**
      * @var GuzzleClient The Guzzle client.
@@ -44,11 +43,10 @@ class Connector implements ConnectorInterface
      * Perform a GET request and return the parsed body as response.
      *
      * @param string $command
-     * @param array|null $payload (optional)
-     *
-     * @return array The response body.
+     * @param array|null $params
+     * @return Response
      */
-    public function get($command, ?array $params = null): array
+    public function get( string $command, ?array $params = null): Response
     {
         $params['command'] = $command;
 
@@ -76,7 +74,7 @@ class Connector implements ConnectorInterface
      *
      * @return mixed[] The decoded JSON response.
      */
-    protected function makeCall(string $method, string $command, ?array $params = null): array
+    protected function makeCall(string $method, string $command, ?array $params = null): Response
     {
         $params['command'] = $command;
 
@@ -95,6 +93,7 @@ class Connector implements ConnectorInterface
      *
      * @param PsrResponse $response The call response.
      *
+     * @return mixed
      * @throws BNamedException
      */
     protected function getResult(PsrResponse $response)
@@ -104,7 +103,9 @@ class Connector implements ConnectorInterface
             $xml = simplexml_load_string($body );
 
             if( (int)$xml->ErrorCode == 0 ) {
-                return Response::parse( $xml->Result->children() );
+                $class = '\\Mvdgeijn\\BNamed\\Responses\\' . (string)$xml->Command . 'Response';
+
+                return new $class( $xml );
             } else {
                 throw new BNamedException("bNamed XML error response code " . $xml->ErrorCode . ": " . $xml->ErrorText );
             }

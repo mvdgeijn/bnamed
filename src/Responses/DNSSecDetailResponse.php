@@ -4,17 +4,16 @@ namespace Mvdgeijn\BNamed\Responses;
 
 use SimpleXMLElement;
 
-class DNSSecDetailResponse implements ResponseInterface
+class DNSSecDetailResponse extends Response
 {
     private int $algorithm;
 
     private string $algorithmString;
 
-    public static function parse(SimpleXMLElement $element)
+    public function __construct(SimpleXMLElement $element)
     {
-        return ( new DNSSecDetailResponse() )
-            ->setAlgorithm( (int)$element->algorith )
-            ->setAlgorithmString( (string)$element->algorithmString );
+        $this->algorith = (int)$element->algorith;
+        $this->algorithString = (string)$element->algorithmString;
     }
 
     /**

@@ -2,7 +2,8 @@
 
 namespace Mvdgeijn\BNamed;
 
-use Mvdgeijn\BNamed\Responses\TLDsResponse;
+use App\Tools\Domain;
+use Mvdgeijn\BNamed\Responses\TLDAllResponse;
 
 class BNamed implements BNamedInterface
 {
@@ -113,7 +114,7 @@ class BNamed implements BNamedInterface
 
     public function TLDAll()
     {
-        return $this->connector->get('TLDall');
+        return $this->connector->get('TLDAll');
     }
 
     public function check($domains)
@@ -124,5 +125,12 @@ class BNamed implements BNamedInterface
     public function getReactivatableDomains()
     {
         return $this->connector->get('GetReactivatableDomains');
+    }
+
+    public function getDomain( string $domainName )
+    {
+        $domain = Domain::create( $domainName );
+
+        return $this->connector->get('GetDomain', ['SLD' => $domain->getSld(), 'TLD' => $domain->getTld()]);
     }
 }

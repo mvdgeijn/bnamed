@@ -103,7 +103,7 @@ class Connector
             $xml = simplexml_load_string($body );
 
             if( (int)$xml->ErrorCode == 0 ) {
-                $class = '\\Mvdgeijn\\BNamed\\Responses\\' . (string)$xml->Command . 'Response';
+                $class = '\\Mvdgeijn\\BNamed\\Responses\\' . ucfirst((string)$xml->Command) . 'Response';
 
                 return new $class( $xml );
             } else {

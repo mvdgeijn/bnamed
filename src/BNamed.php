@@ -100,7 +100,7 @@ class BNamed implements BNamedInterface
     }
 
     /**
-     * Get the client config items.
+     * Get the client configuration
      *
      * @return array Array containing the client config items.
      */
@@ -114,6 +114,8 @@ class BNamed implements BNamedInterface
     }
 
     /**
+     * Retrieve all TLDs.
+     *
      * @return TLDAllResponse
      */
     public function TLDAll(): TLDAllResponse
@@ -122,6 +124,8 @@ class BNamed implements BNamedInterface
     }
 
     /**
+     * Check multiple domains.
+     *
      * @param $domains
      * @return Response
      */
@@ -131,6 +135,8 @@ class BNamed implements BNamedInterface
     }
 
     /**
+     * Get reactivatable domains.
+     *
      * @return GetReactivatableDomainsResponse
      */
     public function getReactivatableDomains(): GetReactivatableDomainsResponse
@@ -139,6 +145,8 @@ class BNamed implements BNamedInterface
     }
 
     /**
+     *  Retrieve a domain by name.
+     *
      * @param string $domainName
      * @return Response
      */

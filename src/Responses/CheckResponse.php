@@ -2,7 +2,7 @@
 
 namespace Mvdgeijn\BNamed\Responses;
 
-class CheckResponse extends Response
+class CheckResponse
 {
     const REGISTERED = '1';
     const UNREGISTERED = '0';

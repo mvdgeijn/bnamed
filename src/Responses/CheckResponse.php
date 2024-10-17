@@ -12,18 +12,10 @@ class CheckResponse extends Response
     protected function parseResult(SimpleXMLElement $result): Response
     {
         foreach( $result->children() as $checkResult ) {
-            $this->items->push(
-                [
-                    'sld' => (string)$checkResult->SLD,
-                    'tld' => (string)$checkResult->TLD,
-                    'domain' => $checkResult->SLD . '.' . $checkResult->TLD,
-                    'code' => (string)$checkResult->AvailabilityCode,
-                    'message' => (string)$checkResult->AvailabilityText
-                ]
-            );
+            $this->items->push( new CheckDomain( $checkResult->SLD, $checkResult->TLD, $checkResult->AvailabilityCode, $checkResult->AvailabilityText ) );
         }
 
-        $this->items->keyBy( 'domain' );
+        $this->items->keyBy( fn( CheckDomain $checkDomain ) => $checkDomain->getDomain() );
 
         return $this;
     }

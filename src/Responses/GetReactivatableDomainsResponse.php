@@ -25,7 +25,7 @@ class GetReactivatableDomainsResponse extends Response
 
     protected function sortResult(): self
     {
-        $this->items->sort( function( $a, $b ) {
+        $this->items = $this->items->sort( function( $a, $b ) {
             return strcmp( $a->getDomain(), $b->getDomain() );
         });
 

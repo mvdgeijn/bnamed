@@ -2,13 +2,18 @@
 
 namespace Mvdgeijn\BNamed\Responses;
 
+use SimpleXMLElement;
+
 class TLDAllResponse extends Response
 {
-    public array $data = [];
-    public function __construct( \SimpleXMLElement $element )
+    protected function parseResult(SimpleXMLElement $result): self
     {
-        foreach( $element->Result->TLDs->children() as $tld ) {
-            $this->data[] = new TLDResponse( $tld );
+        foreach( $result->TLDs->children() as $tld ) {
+            $this->items->push(
+                new TLDResponse( $tld )
+            );
         }
+
+        return $this;
     }
 }

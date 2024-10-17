@@ -66,6 +66,14 @@ class Response implements IteratorAggregate
     }
 
     /**
+     * @return bool
+     */
+    public function isSuccess(): bool
+    {
+        return $this->errorCode === 0;
+    }
+
+    /**
      * @return string
      */
     public function getErrorText(): string

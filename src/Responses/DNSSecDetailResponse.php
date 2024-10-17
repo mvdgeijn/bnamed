@@ -4,7 +4,7 @@ namespace Mvdgeijn\BNamed\Responses;
 
 use SimpleXMLElement;
 
-class DNSSecDetailResponse extends Response
+class DNSSecDetailResponse
 {
     private int $algorithm;
 

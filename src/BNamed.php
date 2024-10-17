@@ -142,8 +142,7 @@ class BNamed implements BNamedInterface
      */
     public function getDomain( string $domainName ): Response
     {
-        $sld = strtok( $domainName, '.' );
-        $tld = strtok('');
+        [$sld, $tld] = explode('.', $domainName, 2);
 
         return $this->connector->get('GetDomain', ['SLD' => $sld, 'TLD' => $tld]);
     }

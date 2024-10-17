@@ -152,7 +152,7 @@ class BNamed implements BNamedInterface
      * @param string $domainName
      * @return ReactivateResponse
      */
-    public function reactivateDomain( string $domainName ): ReactivateResponse
+    public function reactivateDomain( string $domainName, int $numYears = 1 ): ReactivateResponse
     {
         [$sld, $tld] = explode('.', $domainName, 2);
 
@@ -160,7 +160,8 @@ class BNamed implements BNamedInterface
             [
                 "SLD" => $sld,
                 "TLD" => $tld,
-                "IAgreeWithExtraReactivationCosts" => "YES"
+                "IAgreeWithExtraReactivationCosts" => "YES",
+                "NumYears" => $numYears // bNamed API states it's optional, but nothing happens if not present
             ]
         );
     }

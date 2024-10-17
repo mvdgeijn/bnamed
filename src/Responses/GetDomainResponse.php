@@ -4,7 +4,7 @@ namespace Mvdgeijn\BNamed\Responses;
 
 use SimpleXMLElement;
 
-class GetDomainResponse extends Response
+class GetDomainResponse
 {
     public string $sld;
 

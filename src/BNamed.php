@@ -150,7 +150,7 @@ class BNamed implements BNamedInterface
      * Reactivate a domain that is expired
      *
      * @param string $domainName
-     * @return Response
+     * @return ReactivateResponse
      */
     public function reactivateDomain( string $domainName ): ReactivateResponse
     {

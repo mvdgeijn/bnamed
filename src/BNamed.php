@@ -2,14 +2,16 @@
 
 namespace Mvdgeijn\BNamed;
 
+use Mvdgeijn\BNamed\Responses\GetReactivatableDomainsResponse;
 use Mvdgeijn\BNamed\Responses\Response;
+use Mvdgeijn\BNamed\Responses\TLDAllResponse;
 
 class BNamed implements BNamedInterface
 {
     /**
      * The version of this package. This is being used for the user-agent header.
      */
-    public const CLIENT_VERSION = 'v0.1.0';
+    public const CLIENT_VERSION = 'v1.2.0';
 
     /**
      * @var BNamed The client instance.
@@ -19,22 +21,22 @@ class BNamed implements BNamedInterface
     /**
      * @var string The bNamed host. Must include protocol (http, https, etc.).
      */
-    private $host;
+    private string $host;
 
     /**
      * @var string The bNamed API username
      */
-    private $username;
+    private string $username;
 
     /**
      * @var string The bNamed API password
      */
-    private $password;
+    private string $password;
 
     /**
      * @var BNamedInterface The bNamed Connector to make calls.
      */
-    private $connector;
+    private Connector $connector;
 
     /**
      * bNamed Client constructor.
@@ -100,7 +102,7 @@ class BNamed implements BNamedInterface
     /**
      * Get the client config items.
      *
-     * @return mixed[] Array containing the client config items.
+     * @return array Array containing the client config items.
      */
     public function getConfig(): array
     {
@@ -112,9 +114,9 @@ class BNamed implements BNamedInterface
     }
 
     /**
-     * @return Response
+     * @return TLDAllResponse
      */
-    public function TLDAll(): Response
+    public function TLDAll(): TLDAllResponse
     {
         return $this->connector->get('TLDAll');
     }
@@ -129,9 +131,9 @@ class BNamed implements BNamedInterface
     }
 
     /**
-     * @return Response
+     * @return GetReactivatableDomainsResponse
      */
-    public function getReactivatableDomains(): Response
+    public function getReactivatableDomains(): GetReactivatableDomainsResponse
     {
         return $this->connector->get('GetReactivatableDomains');
     }

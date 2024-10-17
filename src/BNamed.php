@@ -2,7 +2,9 @@
 
 namespace Mvdgeijn\BNamed;
 
+use Mvdgeijn\BNamed\Responses\GetDomainResponse;
 use Mvdgeijn\BNamed\Responses\GetReactivatableDomainsResponse;
+use Mvdgeijn\BNamed\Responses\ReactivateResponse;
 use Mvdgeijn\BNamed\Responses\Response;
 use Mvdgeijn\BNamed\Responses\TLDAllResponse;
 
@@ -145,12 +147,31 @@ class BNamed implements BNamedInterface
     }
 
     /**
-     *  Retrieve a domain by name.
+     * Reactivate a domain that is expired
      *
      * @param string $domainName
      * @return Response
      */
-    public function getDomain( string $domainName ): Response
+    public function reactivateDomain( string $domainName ): ReactivateResponse
+    {
+        [$sld, $tld] = explode('.', $domainName, 2);
+
+        return $this->connector->get('Reactivate',
+            [
+                "SLD" => $sld,
+                "TLD" => $tld,
+                "IAgreeWithExtraReactivationCosts" => "YES"
+            ]
+        );
+    }
+
+    /**
+     *  Retrieve a domain by name.
+     *
+     * @param string $domainName
+     * @return GetDomainResponse
+     */
+    public function getDomain( string $domainName ): GetDomainResponse
     {
         [$sld, $tld] = explode('.', $domainName, 2);
 

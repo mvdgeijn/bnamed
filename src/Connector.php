@@ -74,7 +74,7 @@ class Connector
      *
      * @return mixed[] The decoded JSON response.
      */
-    protected function makeCall(string $method, string $command, ?array $params = null): Response
+    protected function makeCall(string $method, string $command, ?array $params = null)
     {
         $params['command'] = $command;
 

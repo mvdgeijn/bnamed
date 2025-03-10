@@ -21,7 +21,7 @@
         "ext-simplexml": "*",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.0.1",
-        "illuminate/support": "^9.0||^10.0||^11.0"
+        "illuminate/support": ">=9.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.3@dev"
